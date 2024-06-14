@@ -39,9 +39,9 @@ export default async function IsOnlineServer() {
             </div>
             <p>{ping && `${ping}ms`}</p>
             {serverList && (
-                <div className=" mt-2">
-                    {isOnline && <p className=" font-bold text-xl">{serverList.meta.pagination.count} servers</p>}
-                    <div className=" grid grid-cols-3 gap-2">
+                <div className=" mt-2 ">
+                    {isOnline && <p className=" font-bold text-xl ml-2">{serverList.meta.pagination.count} servers</p>}
+                    <div className=" flex flex-col xl:grid xl:grid-cols-3 gap-2 w-screen p-2 xl:p-0 xl:w-auto">
                         {isOnline && serverList.data.map((server) => <ServerInfo {...server} key={server.attributes.id} />)}
                     </div>
                 </div>

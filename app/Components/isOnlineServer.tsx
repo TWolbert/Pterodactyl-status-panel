@@ -43,7 +43,7 @@ export default async function IsOnlineServer() {
                 <div className=" mt-2">
                     {isOnline && <p className=" font-bold text-xl">{serverList.meta.pagination.count} servers</p>}
                     <div className=" grid grid-cols-3 gap-2">
-                        {isOnline && serverList.data.map((server) => <ServerInfo {...server} />)}
+                        {isOnline && serverList.data.map((server) => <ServerInfo {...server} key={server.attributes.id} />)}
                     </div>
                 </div>
             )}

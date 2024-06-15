@@ -12,10 +12,12 @@ export default async function IsOnlineServer() {
                 headers: {
                     Authorization: "Bearer " + process.env.NEXT_PUBLIC_API_KEY,
                 },
+                next: { revalidate: 0 }
             });
 
             const data: ServerList = await res.json();
             serverList = data;
+            console.log(data);
 
             ping = Date.now() - startTime;
             return true;

@@ -31,7 +31,8 @@ export default async function IsOnlineServer() {
 
     const isOnline = await fetchData();
 
-    const isLoggedIn = await CheckToken();
+    // const isLoggedIn = await CheckToken();
+    const isLoggedIn = true;
 
     return (
         <div className="items-center justify-center flex flex-col">

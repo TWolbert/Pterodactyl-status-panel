@@ -1,6 +1,5 @@
 import IsOnlineServer from "./Components/isOnlineServer";
 export const dynamic = 'force-dynamic'
-export const runtime = 'edge'
 
 export default function Home() {
   return (

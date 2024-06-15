@@ -1,7 +1,10 @@
+import Link from "next/link";
 import { Egg, Server, ServerList, User } from "../types/responseTypes";
+import { cookies } from "next/headers";
+import { CheckToken } from "../actions/login";
 
 export default async function IsOnlineServer() {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+    const baseUrl = process.env.API_URL;
     let ping = null;
     let serverList = {} as unknown as ServerList;
 
@@ -10,14 +13,13 @@ export default async function IsOnlineServer() {
         try {
             const res = await fetch(`${baseUrl}/api/application/servers`, {
                 headers: {
-                    Authorization: "Bearer " + process.env.NEXT_PUBLIC_API_KEY,
+                    Authorization: "Bearer " + process.env.API_KEY,
                 },
                 next: { revalidate: 0 }
             });
 
             const data: ServerList = await res.json();
             serverList = data;
-            console.log(data);
 
             ping = Date.now() - startTime;
             return true;
@@ -28,6 +30,8 @@ export default async function IsOnlineServer() {
     };
 
     const isOnline = await fetchData();
+
+    const isLoggedIn = await CheckToken();
 
     return (
         <div className="items-center justify-center flex flex-col">
@@ -40,7 +44,10 @@ export default async function IsOnlineServer() {
                 <p>{isOnline ? "Online" : "Offline"}</p>
             </div>
             <p>{ping && `${ping}ms`}</p>
-            {serverList && (
+            {
+                isLoggedIn ? <p>Hello</p> : <Link href={'/login'}>Log in to your account</Link>
+            }
+            {(isLoggedIn && serverList) && (
                 <div className=" mt-2 ">
                     {isOnline && <p className=" font-bold text-xl ml-2">{serverList.meta.pagination.count} servers</p>}
                     <div className=" flex flex-col xl:grid xl:grid-cols-3 gap-2 w-screen p-2 xl:p-0 xl:w-auto">
@@ -53,17 +60,17 @@ export default async function IsOnlineServer() {
 }
 
 const ServerInfo = async (data: Server) => {
-    const reqUser = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/application/users/${data.attributes.user}`,{
+    const reqUser = await fetch(`${process.env.API_URL}/api/application/users/${data.attributes.user}`,{
         headers: {
-            Authorization: "Bearer " + process.env.NEXT_PUBLIC_API_KEY,
+            Authorization: "Bearer " + process.env.API_KEY,
         },
     })
 
     const user: User = await reqUser.json()
 
-    const reqEgg = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/application/nests/${data.attributes.nest}/eggs/${data.attributes.egg}`,{
+    const reqEgg = await fetch(`${process.env.API_URL}/api/application/nests/${data.attributes.nest}/eggs/${data.attributes.egg}`,{
         headers: {
-            Authorization: "Bearer " + process.env.NEXT_PUBLIC_API_KEY,
+            Authorization: "Bearer " + process.env.API_KEY,
         },
     })
 
@@ -73,7 +80,7 @@ const ServerInfo = async (data: Server) => {
             <p>Name: {data.attributes.name}</p>
             <p>Egg: {egg.attributes.name}</p>
             <p>User: {user.attributes.first_name + ' ' + user.attributes.last_name + ' - ' + user.attributes.username}</p>
-            <a className="mt-auto bg-indigo-400 px-3 py-2 text-white font-bold rounded-md shadow-md hover:-translate-y-1 active:translate-y-1 transition-all" href={`${process.env.NEXT_PUBLIC_API_URL}/server/${data.attributes.uuid.split('-')[0]}`} target="_blank" rel="noreferrer">{'>'} Goto</a>
+            <a className="mt-auto bg-indigo-400 px-3 py-2 text-white font-bold rounded-md shadow-md hover:-translate-y-1 active:translate-y-1 transition-all" href={`${process.env.API_URL}/server/${data.attributes.uuid.split('-')[0]}`} target="_blank" rel="noreferrer">{'>'} Goto</a>
         </div>
     );
 }
